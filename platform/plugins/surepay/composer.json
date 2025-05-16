@@ -1,0 +1,8 @@
+{
+    "name": "botble/surepay",
+    "description": "Surepay",
+    "type": "package",
+    "require": {
+        "unicodeveloper/laravel-paystack": "^1.0"
+    }
+}
