@@ -18,9 +18,6 @@ class SiteMapManager
 
     public function __construct(protected Sitemap $siteMap)
     {
-        info("SiteMapManager called",[
-            'siteMap' => $this->siteMap,
-        ]);
     }
 
     public function init(?string $prefix = null, string $extension = 'xml'): self

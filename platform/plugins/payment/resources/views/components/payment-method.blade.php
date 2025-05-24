@@ -9,7 +9,6 @@
 @php
     $isSelected = PaymentMethods::getSelectingMethod() === $name;
     $id = sprintf('payment-%s', $name);
-    echo "$id, $name";
 @endphp
 @if($id == 'payment-paystack')
     <li class="list-group-item payment-method-item">

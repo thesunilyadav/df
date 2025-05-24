@@ -41,10 +41,6 @@ class PublicController extends BaseController
 
     public function getView(?string $key = null, string $prefix = '')
     {
-        info("get view", [
-            'key' => $key,
-            'prefix' => $prefix,
-        ]);
         if (empty($key)) {
             return $this->getIndex();
         }
@@ -115,12 +111,6 @@ class PublicController extends BaseController
 
     public function getViewWithPrefix(string $prefix, ?string $slug = null)
     {
-        info("requested public route with prefix", [
-            'url' => request()->url(),
-            'method' => request()->method(),
-            'ip' => request()->ip(),
-            'prefix' => $prefix,
-        ]);
         return $this->getView($slug, $prefix);
     }
 }

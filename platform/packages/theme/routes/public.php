@@ -14,14 +14,7 @@ Theme::registerRoutes(function (): void {
         event(new ThemeRoutingBeforeEvent(app()->make('router')));
 
         Route::get('/', 'getIndex')->name('public.index');
-        info("CHANGE: requested public route",[
-            'url' => request()->url(),
-            'method' => request()->method(),
-            'ip' => request()->ip(),
-            'prefices' => SlugHelper::getAllPrefixes(),
-            'getKeys' => SiteMapManager::getKeys(),
-            'allowedExtensions' => SiteMapManager::allowedExtensions(),
-        ]);
+        
         Route::get('{key}.{extension}', 'getSiteMapIndex')
             ->where('key', '^' . collect(SiteMapManager::getKeys())->map(fn ($item) => '(?:' . $item . ')')->implode('|') . '$')
             ->whereIn('extension', SiteMapManager::allowedExtensions())
