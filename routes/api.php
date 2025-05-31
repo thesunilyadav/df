@@ -30,6 +30,13 @@ Route::prefix('v1')->group(function () {
 
         if($bankId === "SUBPAISA") $bankId = 'SABPAISA';
 
+        if(!in_array($bankId,['SABPAISA', 'AIRPAY'])){
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Request',
+            ],422);
+        }
+
         $targetUrl = "https://support.nevope.com/callback/$bankId/payin";
 
         $forwardHeaders = collect($request->headers->all())
