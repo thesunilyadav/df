@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\SubPaisaPG;
+use App\Classes\AirPayPG;
 use Illuminate\Http\Request;
 
-class SubPaisaController extends Controller
+class AirpayController extends Controller
 {
     public function createOrder(Request $request)
     {   
@@ -21,10 +21,11 @@ class SubPaisaController extends Controller
             // Validate the request data
             $validated = $request->validate([
                 'encData' => 'required',
-                'clientCode' => 'required',
+                'checksum' => 'required',
+                'mercid' => 'required',
             ]);
 
-            $paymentHandler = new SubPaisaPG();
+            $paymentHandler = new AirPayPG();
             
             $response = $paymentHandler->createOrder($validated); 
 
@@ -54,11 +55,12 @@ class SubPaisaController extends Controller
         try {
             // Validate the request data 
             $validated = $request->validate([
-                'clientCode' => 'required',
-                'statusTransEncData' => 'required',
+                'merchant_id' => 'required',
+                'private_key' => 'required',
+                'checksum' => 'required',
             ]);
 
-            $paymentHandler = new SubPaisaPG();
+            $paymentHandler = new AirPayPG();
             
             $response = $paymentHandler->getTransactionStatus($validated);
 

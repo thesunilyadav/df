@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\AirpayController;
 use App\Http\Controllers\SubPaisaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -20,14 +21,16 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::any('/handle/{bankId}/callback', function (Request $request, $bankId) {
 
-        /* Log::info("CALLBACK RECEIVED FROM SUBPAISA", [
+        Log::info("CALLBACK RECEIVED FROM PG", [
             "REQUEST" => $request->all(),
             "METHOD" => $request->method(),
             "BANK_ID" => $bankId,
             "getClientIp" => $request->getClientIp(),
-        ]); */
+        ]);
 
-        $targetUrl = "https://support.nevope.com/callback/SABPAISA/payin";
+        if($bankId === "SUBPAISA") $bankId = 'SABPAISA';
+
+        $targetUrl = "https://support.nevope.com/callback/$bankId/payin";
 
         $forwardHeaders = collect($request->headers->all())
             ->except(['host']) // prevent Host mismatch
@@ -41,18 +44,31 @@ Route::prefix('v1')->group(function () {
                 'json' => $request->json()->all()
             ]);
 
+        if($bankId === 'SABPAISA'){
+            return response()->json([
+                'status' => 200,
+                'message' => 'API_SUCCESSFULL_MESSAGE',
+                "data" => [
+                    "statusCode" => "01", 
+                    "message" => "Data successfully processed", 
+                    // "sabpaisaTxnId" => "933682406240554393" 
+                ]
+            ], 200);
+        }
+
         return response()->json([
             'status' => 200,
-            'message' => 'API_SUCCESSFULL_MESSAGE',
-			"data" => [
-                "statusCode" => "01", 
-                "message" => "Data successfully processed", 
-                // "sabpaisaTxnId" => "933682406240554393" 
-            ]
+            'message' => 'Callback received successfully'
         ], 200);
-    })->name('pg.payin.callback');
+    })->name('pg.payin.callback'); 
     
     Route::group(['prefix' => '/subpaisa/payment', 'controller' => SubPaisaController::class, 'as' => 'pg.subpaisa.'], function () {
+        Route::post('/','createOrder')->name('payment');
+
+        Route::post('/query','getTransactionStatus')->name('payment.query');
+    });
+
+    Route::group(['prefix' => '/airpay/payment', 'controller' => AirpayController::class, 'as' => 'pg.airpay.'], function () {
         Route::post('/','createOrder')->name('payment');
 
         Route::post('/query','getTransactionStatus')->name('payment.query');
