@@ -8,7 +8,6 @@
 
 
         <script>
-            console.log("subpaisa method script")
             function startTimer() {
                 console.log("subpaisa method startTimer")
                 let timer2 = "05:01";
@@ -65,7 +64,6 @@
             }
 
             $(document).ready(function() {
-                console.log("subpaisa method ready")
                 var $paymentCheckoutForm = $(document).find('.payment-checkout-form');
 
                 $paymentCheckoutForm.on('submit', function(e) {
