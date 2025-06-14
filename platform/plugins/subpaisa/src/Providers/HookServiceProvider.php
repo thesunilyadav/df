@@ -17,12 +17,12 @@ use Throwable;
 
 class HookServiceProvider extends ServiceProvider
 {
+    private const CIPHER_KEY_LEN = 16;
+    private const IV_LEN = 16;
+    private const OPENSSL_CIPHER_NAME = 'aes-128-cbc';
+
     public function boot(): void
     {
-        define("OPENSSL_CIPHER_NAME", "aes-128-cbc");
-        define("CIPHER_KEY_LEN", 16);
-        define("IV_LEN", 16);
-
         add_filter(PAYMENT_FILTER_ADDITIONAL_PAYMENT_METHODS, [$this, 'registerSubpaisaMethod'], 16, 2);
         $this->app->booted(function (): void {
             add_filter(PAYMENT_FILTER_AFTER_POST_CHECKOUT, [$this, 'checkoutWithSubpaisa'], 16, 2);
@@ -187,6 +187,7 @@ class HookServiceProvider extends ServiceProvider
             ];
 
             $responseData = $paymentHandler->createOrder($formData);
+            $response = null;
 
             if (isset($responseData['data'])) {
                 parse_str($responseData['data'], $parsedData);
@@ -251,12 +252,12 @@ class HookServiceProvider extends ServiceProvider
 
     public function fixKey($key)
     {
-        return str_pad(substr($key, 0, CIPHER_KEY_LEN), CIPHER_KEY_LEN, "0");
+        return str_pad(substr($key, 0, self::CIPHER_KEY_LEN), self::CIPHER_KEY_LEN, "0");
     }
 
     public function fixIV($iv)
     {
-        return str_pad(substr($iv, 0, IV_LEN), IV_LEN, "0");
+        return str_pad(substr($iv, 0, self::IV_LEN), self::IV_LEN, "0");
     }
 
     public function encrypt($key, $iv, $data)
@@ -264,7 +265,7 @@ class HookServiceProvider extends ServiceProvider
         $fixedKey = $this->fixKey($key);
         $fixedIV = $this->fixIV($iv);
 
-        $encryptedData = openssl_encrypt($data, OPENSSL_CIPHER_NAME, $fixedKey, OPENSSL_RAW_DATA, $fixedIV);
+        $encryptedData = openssl_encrypt($data, self::OPENSSL_CIPHER_NAME, $fixedKey, OPENSSL_RAW_DATA, $fixedIV);
 
         if ($encryptedData === false) {
             return false;
@@ -284,6 +285,6 @@ class HookServiceProvider extends ServiceProvider
         $iv = base64_decode($parts[1]);
         $fixedKey = $this->fixKey($key);
 
-        return openssl_decrypt($encrypted, OPENSSL_CIPHER_NAME, $fixedKey, OPENSSL_RAW_DATA, $iv);
+        return openssl_decrypt($encrypted, self::OPENSSL_CIPHER_NAME, $fixedKey, OPENSSL_RAW_DATA, $iv);
     }
 }

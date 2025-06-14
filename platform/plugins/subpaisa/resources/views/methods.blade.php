@@ -9,7 +9,6 @@
 
         <script>
             function startTimer() {
-                console.log("subpaisa method startTimer")
                 let timer2 = "05:01";
                 let orderInterval = setInterval(function() {
 
@@ -37,7 +36,6 @@
             }
 
             function statusCheck() {
-                console.log("subpaisa method statusCheck")
                 let statusInterval = setInterval(function() {
                     let orderStatus = fetch(window.location.pathname + "/status");
                     orderStatus.then((json) => json.json()).then((data) => {
@@ -105,7 +103,6 @@
                             method : 'POST',
                             data: Object.fromEntries(new FormData($paymentCheckoutForm[0]).entries()),
                             success: function (data) {
-                                console.log("data", data)
                                 const qrModal = `<div class="modal fade" id="subPaisaQRModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                       <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
